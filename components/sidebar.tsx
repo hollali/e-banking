@@ -9,7 +9,7 @@ import React from 'react'
 const Sidebar = ({user}:SiderbarProps) => {
   const pathname = usePathname();
   return (
-    <section>
+    <section className='sidebar'>
         <nav className='flex flex-col gap-4'>
             <Link href="/"className='mb-12 cursor-pointer flex items-center gap-2'>
             <Image
