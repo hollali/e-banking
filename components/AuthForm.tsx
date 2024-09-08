@@ -41,11 +41,20 @@ const AuthForm = ({ type }: { type: string }) => {
 	});
 
 	// 2. Define a submit handler.
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 
 		try{
 			// Sign up with Appwrite & create plaid link
+			if(type === 'sign-up'){
+				//const newUser = await signUp(data);
+
+				//setUser(newUser);
+			}
+
+			if(type === 'sign-in'){
+
+			}
 		}catch(error){
 			console.log(error);
 		} finally {
