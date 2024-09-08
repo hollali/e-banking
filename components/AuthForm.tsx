@@ -141,7 +141,7 @@ const AuthForm = ({ type }: { type: string }) => {
 										control={form.control}
 										name="ssn"
 										label="Identification Number"
-										placeholder="Example:  "
+										placeholder="Example:  GHA-000000000-0"
 									/>
 									</div>
 								</>
