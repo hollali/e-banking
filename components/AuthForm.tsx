@@ -47,28 +47,27 @@ const AuthForm = ({ type }: { type: string }) => {
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 
-		try{
+		try {
 			// Sign up with Appwrite & create plaid link
-			if(type === 'sign-up'){
+			if (type === "sign-up") {
 				const newUser = await signUp(data);
 
 				setUser(newUser);
 			}
 
-			if(type === 'sign-in'){
+			if (type === "sign-in") {
 				const response = await signIn({
 					email: data.email,
 					password: data.password,
-				})
-				if (response) router.push('/')
+				});
+				if (response) router.push("/");
 			}
-		}catch(error){
+		} catch (error) {
 			console.log(error);
 		} finally {
 			setIsLoading(false);
 		}
-		
-	}
+	};
 
 	return (
 		<section className="auth-form">
@@ -124,32 +123,32 @@ const AuthForm = ({ type }: { type: string }) => {
 										placeholder="Enter your specific Address"
 									/>
 									<div className="flex gap-4">
-									<CustomInput
-										control={form.control}
-										name="city"
-										label="City / Town"
-										placeholder="Example Accra "
-									/>
-									<CustomInput
-										control={form.control}
-										name="postalCode"
-										label="Postal Code"
-										placeholder="Example: GA100"
-									/>
+										<CustomInput
+											control={form.control}
+											name="city"
+											label="City / Town"
+											placeholder="Example Accra "
+										/>
+										<CustomInput
+											control={form.control}
+											name="postalCode"
+											label="Postal Code"
+											placeholder="Example: GA100"
+										/>
 									</div>
 									<div className="flex gap-4">
-									<CustomInput
-										control={form.control}
-										name="dateOfBirth"
-										label="Date of Birth"
-										placeholder="YYYY-MM-DD"
-									/>
-									<CustomInput
-										control={form.control}
-										name="ssn"
-										label="Identification Number"
-										placeholder="Example:  GHA-000000000-0"
-									/>
+										<CustomInput
+											control={form.control}
+											name="dateOfBirth"
+											label="Date of Birth"
+											placeholder="YYYY-MM-DD"
+										/>
+										<CustomInput
+											control={form.control}
+											name="ssn"
+											label="Identification Number"
+											placeholder="Example:  GHA-000000000-0"
+										/>
 									</div>
 								</>
 							)}
