@@ -9,12 +9,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
@@ -164,7 +158,6 @@ const AuthForm = ({ type }: { type: string }) => {
 								label="Password"
 								placeholder="Enter your password"
 							/>
-
 							<div className="flex flex-col gap-4">
 								<Button type="submit" disabled={isLoading} className="form-btn">
 									{isLoading ? (
