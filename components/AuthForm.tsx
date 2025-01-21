@@ -38,7 +38,7 @@ const AuthForm = ({ type }: { type: string }) => {
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 		try {
-			// Sign up with Appwrite & create plaid link
+			//* Sign up with Appwrite & create plaid link
 			if (type === "sign-up") {
 				const newUser = await signUp(data);
 				setUser(newUser);
