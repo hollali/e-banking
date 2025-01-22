@@ -15,7 +15,7 @@ import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/actions/user.actions";
+import { signIn, signUp } from "@/lib/actions/user.actions";
 
 const formSchema = z.object({
 	email: z.string().email(),
@@ -33,19 +33,24 @@ const AuthForm = ({ type }: { type: string }) => {
 			email: "",
 			password: "",
 		},
-	});
+	})
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 		try {
 			//* Sign up with Appwrite & create plaid link
-			if (type === "sign-up") {
+			if (type === 'sign-up') {
 				const userData = {
 					firstName: data.firstName!,
 					lastName: data.lastName!,
 					address: data.address!,
 					city: data.city!,
+					email: data.email!,
+					password: data.password!,
 				}
+				const newUser = await signUp(userData);
+
+				setUser(newUser);
 			}
 			if (type === "sign-in") {
 				const response = await signIn({

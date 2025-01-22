@@ -8,7 +8,7 @@ export const signIn = async () => {
     }
 }
 
-export const signUn = async (userData: SignUpParams) => {
+export const signUp = async (userData: SignUpParams) => {
     try {
         //Create a user account 
     } catch(error) {
