@@ -40,8 +40,12 @@ const AuthForm = ({ type }: { type: string }) => {
 		try {
 			//* Sign up with Appwrite & create plaid link
 			if (type === "sign-up") {
-				const newUser = await signUp(data);
-				setUser(newUser);
+				const userData = {
+					firstName: data.firstName!,
+					lastName: data.lastName!,
+					address: data.address!,
+					city: data.city!,
+				}
 			}
 			if (type === "sign-in") {
 				const response = await signIn({
