@@ -43,7 +43,7 @@ const AuthForm = ({ type }: { type: string }) => {
 				const userData = {
 					firstName: data.firstName!,
 					lastName: data.lastName!,
-					address: data.address!,
+					address1: data.address1!,
 					city: data.city!,
 					email: data.email!,
 					password: data.password!,
