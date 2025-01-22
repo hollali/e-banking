@@ -17,9 +17,6 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/user.actions";
 
-const formSchema = z.object({
-	email: z.string().email(),
-});
 
 const AuthForm = ({ type }: { type: string }) => {
 	const router = useRouter();
@@ -43,13 +40,15 @@ const AuthForm = ({ type }: { type: string }) => {
 				const userData = {
 					firstName: data.firstName!,
 					lastName: data.lastName!,
-					address1: data.address1!,
+					address1: data.address!,
 					city: data.city!,
+					postalCode: data.postalCode!,
+					dateOfBirth: data.dateOfBirth!,
+					ssn: data.ssn,
 					email: data.email!,
 					password: data.password!,
 				}
 				const newUser = await signUp(userData);
-
 				setUser(newUser);
 			}
 			if (type === "sign-in") {
@@ -57,7 +56,7 @@ const AuthForm = ({ type }: { type: string }) => {
 					email: data.email,
 					password: data.password,
 				});
-				if (response) router.push("/");
+				if (response) router.push('/');
 			}
 		} catch (error) {
 			console.log(error);
