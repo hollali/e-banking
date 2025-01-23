@@ -29,7 +29,7 @@ const AuthForm = ({ type }: { type: string }) => {
 		defaultValues: {
 			email: "",
 			password: "",
-		},
+		}, 
 	})
 
 	const onSubmit = async (data: z.infer<typeof formSchema>) => {
@@ -48,15 +48,15 @@ const AuthForm = ({ type }: { type: string }) => {
 					email: data.email!,
 					password: data.password!,
 				}
-				const newUser = await signUp(userData);
-				setUser(newUser);
+				//const newUser = await signUp(userData);
+				//setUser(newUser);
 			}
 			if (type === "sign-in") {
-				const response = await signIn({
-					email: data.email,
-					password: data.password,
-				});
-				if (response) router.push('/');
+				//const response = await signIn({
+				//	email: data.email,
+				//	password: data.password,
+				//});
+				//if (response) router.push('/')
 			}
 		} catch (error) {
 			console.log(error);
