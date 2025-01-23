@@ -2,7 +2,9 @@ import React from 'react'
 
 const TransactionHistory = () => {
   return (
-    <div> Transactions</div>
+    <div> 
+      Transactions
+    </div>
   )
 }
 
