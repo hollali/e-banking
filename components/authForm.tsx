@@ -2,8 +2,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import React, { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {Form,} from "@/components/ui/form";
@@ -13,6 +11,8 @@ import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/user.actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 
 const AuthForm = ({ type }: { type: string }) => {
@@ -20,22 +20,23 @@ const AuthForm = ({ type }: { type: string }) => {
 	const [user, setUser] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const formSchema = authFormSchema(type);
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const formSchema = authFormSchema(type)
+
+	const form = useForm<z.infer<typeof formSchema>>
+	({
+		resolver: zodResolver(authFormSchema(type)),
 		defaultValues: {
 			email: "",
-			password: "",
-		}, 
-	})
+		},
+	});
 
-	const onSubmit = async (data: z.infer<typeof formSchema>) => {
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 		try {
 			//* Sign up with Appwrite & create plaid link
 			if (type === 'sign-up') {
 				const userData = {
-					firstName: data.firstName!,
+					/*firstName: data.firstName!,
 					lastName: data.lastName!,
 					address1: data.address!,
 					city: data.city!,
@@ -43,7 +44,7 @@ const AuthForm = ({ type }: { type: string }) => {
 					dateOfBirth: data.dateOfBirth!,
 					ssn: data.ssn,
 					email: data.email!,
-					password: data.password!,
+					password: data.password!,*/
 				}
 				const newUser = await signUp(data);
 				setUser(newUser);
