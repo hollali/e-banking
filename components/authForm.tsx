@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {Form,} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomInput from "./customInput";
 import { authFormSchema } from "@/lib/utils";
@@ -14,16 +14,14 @@ import { signIn, signUp } from "@/lib/actions/user.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-
 const AuthForm = ({ type }: { type: string }) => {
 	const router = useRouter();
 	const [user, setUser] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const formSchema = authFormSchema(type)
+	const formSchema = authFormSchema(type);
 
-	const form = useForm<z.infer<typeof formSchema>>
-	({
+	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(authFormSchema(type)),
 		defaultValues: {
 			email: "",
@@ -34,7 +32,7 @@ const AuthForm = ({ type }: { type: string }) => {
 		setIsLoading(true);
 		try {
 			//* Sign up with Appwrite & create plaid link
-			if (type === 'sign-up') {
+			if (type === "sign-up") {
 				const userData = {
 					/*firstName: data.firstName!,
 					lastName: data.lastName!,
@@ -45,7 +43,7 @@ const AuthForm = ({ type }: { type: string }) => {
 					ssn: data.ssn,
 					email: data.email!,
 					password: data.password!,*/
-				}
+				};
 				const newUser = await signUp(data);
 				setUser(newUser);
 			}
