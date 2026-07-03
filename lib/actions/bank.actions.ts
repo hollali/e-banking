@@ -1,7 +1,7 @@
 'use server';
 
 import { eq, or, desc } from 'drizzle-orm';
-import { db } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { bankAccounts, transactions as transactionsSchema } from '@/lib/db/schema';
 import { parseStringify } from '@/lib/utils';
 import { getBanks, getBank } from './user.actions';
@@ -38,7 +38,7 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   try {
     const bank = await getBank({ documentId: appwriteItemId });
 
-    const transferTransactionsData = await db.select()
+    const transferTransactionsData = await getDb().select()
       .from(transactionsSchema)
       .where(
         or(

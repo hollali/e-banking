@@ -1,6 +1,6 @@
 'use server';
 
-import { db } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { transactions } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { parseStringify } from '@/lib/utils';
@@ -11,7 +11,7 @@ function mapTransaction(txn: typeof transactions.$inferSelect) {
 
 export const createTransaction = async (transactionData: CreateTransactionProps) => {
   try {
-    const [transaction] = await db.insert(transactions).values({
+    const [transaction] = await getDb().insert(transactions).values({
       name: transactionData.name,
       amount: transactionData.amount,
       senderId: transactionData.senderId,
@@ -30,7 +30,7 @@ export const createTransaction = async (transactionData: CreateTransactionProps)
 
 export const getTransactionsByBankId = async ({ bankId }: getTransactionsByBankIdProps) => {
   try {
-    const result = await db.select()
+    const result = await getDb().select()
       .from(transactions)
       .where(eq(transactions.senderBankId, bankId));
 

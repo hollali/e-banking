@@ -1,7 +1,7 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
-import { db } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, bankAccounts } from '@/lib/db/schema';
 import { parseStringify, encryptId } from '@/lib/utils';
 import { createPaystackCustomer, createDedicatedVirtualAccountFn, createTransferRecipientFn } from './paystack.actions';
@@ -16,7 +16,7 @@ function mapBank(bank: typeof bankAccounts.$inferSelect) {
 
 export const getUserInfo = async ({ userId }: getUserInfoProps) => {
   try {
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const [user] = await getDb().select().from(users).where(eq(users.id, userId)).limit(1);
     if (!user) return null;
     return parseStringify(mapUser(user));
   } catch (error) {
@@ -40,11 +40,11 @@ export const setupPaystackAccount = async (user: { id: string; email: string; fi
     );
     if (!recipient) throw new Error('Failed to create transfer recipient');
 
-    await db.update(users).set({ paystackCustomerCode: customer.customer_code }).where(eq(users.id, user.id));
+    await getDb().update(users).set({ paystackCustomerCode: customer.customer_code }).where(eq(users.id, user.id));
 
     const sharableId = encryptId(user.id);
 
-    const [bankAccount] = await db.insert(bankAccounts).values({
+    const [bankAccount] = await getDb().insert(bankAccounts).values({
       userId: user.id,
       recipientCode: recipient.recipient_code,
       virtualAccountNumber: virtualAccount.account_number,
@@ -68,7 +68,7 @@ export const createBankAccount = async ({
   sharableId,
 }: any) => {
   try {
-    const [bankAccount] = await db.insert(bankAccounts).values({
+    const [bankAccount] = await getDb().insert(bankAccounts).values({
       userId,
       recipientCode,
       virtualAccountNumber,
@@ -85,7 +85,7 @@ export const createBankAccount = async ({
 
 export const getBanks = async ({ userId }: getBanksProps) => {
   try {
-    const result = await db.select().from(bankAccounts).where(eq(bankAccounts.userId, userId));
+    const result = await getDb().select().from(bankAccounts).where(eq(bankAccounts.userId, userId));
     return parseStringify(result.map(mapBank));
   } catch (error) {
     console.error('Error getting banks:', error);
@@ -95,7 +95,7 @@ export const getBanks = async ({ userId }: getBanksProps) => {
 
 export const getBank = async ({ documentId }: getBankProps) => {
   try {
-    const [bank] = await db.select().from(bankAccounts).where(eq(bankAccounts.id, documentId)).limit(1);
+    const [bank] = await getDb().select().from(bankAccounts).where(eq(bankAccounts.id, documentId)).limit(1);
     if (!bank) return null;
     return parseStringify(mapBank(bank));
   } catch (error) {
@@ -106,7 +106,7 @@ export const getBank = async ({ documentId }: getBankProps) => {
 
 export const getBankByAccountId = async ({ accountId }: getBankByAccountIdProps) => {
   try {
-    const [bank] = await db.select().from(bankAccounts).where(eq(bankAccounts.virtualAccountNumber, accountId)).limit(1);
+    const [bank] = await getDb().select().from(bankAccounts).where(eq(bankAccounts.virtualAccountNumber, accountId)).limit(1);
     if (!bank) return null;
     return parseStringify(mapBank(bank));
   } catch (error) {

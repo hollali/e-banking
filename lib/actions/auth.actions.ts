@@ -2,19 +2,19 @@
 
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
-import { db } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { hashPassword, verifyPassword, createToken, verifyToken } from '@/lib/auth';
 import { parseStringify } from '@/lib/utils';
 
 export const signUp = async (userData: SignUpParams) => {
   try {
-    const existingUser = await db.select().from(users).where(eq(users.email, userData.email)).limit(1);
+    const existingUser = await getDb().select().from(users).where(eq(users.email, userData.email)).limit(1);
     if (existingUser.length > 0) throw new Error('User already exists');
 
     const hashedPassword = await hashPassword(userData.password);
 
-    const [newUser] = await db.insert(users).values({
+    const [newUser] = await getDb().insert(users).values({
       email: userData.email,
       password: hashedPassword,
       firstName: userData.firstName,
@@ -46,7 +46,7 @@ export const signUp = async (userData: SignUpParams) => {
 
 export const signIn = async ({ email, password }: signInProps) => {
   try {
-    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    const [user] = await getDb().select().from(users).where(eq(users.email, email)).limit(1);
     if (!user) throw new Error('User not found');
 
     const isValid = await verifyPassword(password, user.password);
@@ -79,7 +79,7 @@ export const getLoggedInUser = async () => {
     const payload = await verifyToken(sessionCookie.value);
     if (!payload) return null;
 
-    const [user] = await db.select().from(users).where(eq(users.id, payload.userId)).limit(1);
+    const [user] = await getDb().select().from(users).where(eq(users.id, payload.userId)).limit(1);
     if (!user) return null;
 
     return parseStringify(getUserResponse(user));
