@@ -4,15 +4,18 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomInput from "./customInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signIn, signUp } from "@/lib/actions/user.actions";
+import { signIn, signUp } from "@/lib/actions/auth.actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import PaystackLink from "./PaystackLink";
+import { DatePicker } from "./DatePicker";
+import { format } from "date-fns";
 
 const AuthForm = ({ type }: { type: string }) => {
 	const router = useRouter();
@@ -28,31 +31,30 @@ const AuthForm = ({ type }: { type: string }) => {
 		},
 	});
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
 		try {
-			//* Sign up with Appwrite & create plaid link
 			if (type === "sign-up") {
-				/*const userData = {
-					/*firstName: data.firstName!,
+				const userData = {
+					firstName: data.firstName!,
 					lastName: data.lastName!,
-					address1: data.address!,
+					address: data.address!,
 					city: data.city!,
 					postalCode: data.postalCode!,
 					dateOfBirth: data.dateOfBirth!,
-					ssn: data.ssn,
+					ssn: data.ssn!,
 					email: data.email!,
 					password: data.password!,
-				};*/
-				const newUser = await signUp(data);
-				setUser(newUser);
+				};
+				const newUser = await signUp(userData);
+				if (newUser) setUser(newUser);
 			}
 			if (type === "sign-in") {
-				//const response = await signIn({
-				//	email: data.email,
-				//	password: data.password,
-				//});
-				//if (response) router.push('/')
+				const response = await signIn({
+					email: data.email,
+					password: data.password,
+				});
+				if (response) router.push('/')
 			}
 		} catch (error) {
 			console.log(error);
@@ -87,7 +89,9 @@ const AuthForm = ({ type }: { type: string }) => {
 				</div>
 			</header>
 			{user ? (
-				<div className="flex flex-col gap-4">{/* PlaidLink */}</div>
+				<div className="flex flex-col gap-4">
+					<PaystackLink user={user} />
+				</div>
 			) : (
 				<>
 					<Form {...form}>
@@ -129,12 +133,27 @@ const AuthForm = ({ type }: { type: string }) => {
 										/>
 									</div>
 									<div className="flex gap-4">
-										<CustomInput
-											control={form.control}
-											name="dateOfBirth"
-											label="Date of Birth"
-											placeholder="YYYY-MM-DD"
-										/>
+										<div className="flex-1">
+											<FormField
+												control={form.control}
+												name="dateOfBirth"
+												render={({ field }) => (
+													<div className="form-item">
+														<label className="form-label">Date of Birth</label>
+														<div className="flex w-full flex-col">
+															<DatePicker
+																value={field.value ? new Date(field.value) : undefined}
+																onChange={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")}
+																placeholder="Select your date of birth"
+															/>
+															{form.formState.errors.dateOfBirth && (
+																<p className="form-message mt-2">{form.formState.errors.dateOfBirth.message}</p>
+															)}
+														</div>
+													</div>
+												)}
+											/>
+										</div>
 										<CustomInput
 											control={form.control}
 											name="ssn"
