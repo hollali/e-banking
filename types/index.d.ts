@@ -99,7 +99,7 @@ declare type TransferParams = {
 declare interface CreditCardProps { account: Account; userName: string; showBalance?: boolean; }
 declare interface BankInfoProps { account: Account; appwriteItemId?: string; type: "full" | "card"; }
 declare interface HeaderBoxProps { type?: "title" | "greeting"; title: string; subtext: string; user?: string; }
-declare interface MobileNavProps { user: User; }
+declare interface MobileNavProps { user: User | null; }
 declare interface PageHeaderProps { topTitle: string; bottomTitle: string; topDescription: string; bottomDescription: string; connectBank?: boolean; }
 declare interface PaginationProps { page: number; totalPages: number; }
 declare interface AuthFormProps { type: "sign-in" | "sign-up"; }

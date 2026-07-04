@@ -71,7 +71,17 @@ const MobileNav = ({ user }: MobileNavProps) => {
 								})}
 							</nav>
 						</SheetClose>
-						<SidebarFooter user={user} />
+						{user ? (
+							<SidebarFooter user={user} />
+						) : (
+							<SheetClose asChild>
+								<Link
+									href="/sign-in"
+									className="flex items-center justify-center gap-2 rounded-lg bg-bank-gradient p-4 mx-4 mb-4">
+									<p className="text-16 font-semibold text-white">Sign In</p>
+								</Link>
+							</SheetClose>
+						)}
 					</div>
 				</SheetContent>
 			</Sheet>
