@@ -98,7 +98,7 @@ const AuthForm = ({ type }: { type: string }) => {
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 							{type === "sign-up" && (
 								<>
-									<div className="flex gap-4">
+									<div className="flex flex-col sm:flex-row gap-4">
 										<CustomInput
 											control={form.control}
 											name="firstName"
@@ -118,7 +118,7 @@ const AuthForm = ({ type }: { type: string }) => {
 										label="Address"
 										placeholder="Enter your specific Address"
 									/>
-									<div className="flex gap-4">
+									<div className="flex flex-col sm:flex-row gap-4">
 										<CustomInput
 											control={form.control}
 											name="city"
@@ -132,7 +132,7 @@ const AuthForm = ({ type }: { type: string }) => {
 											placeholder="Example: GA100"
 										/>
 									</div>
-									<div className="flex gap-4">
+									<div className="flex flex-col sm:flex-row gap-4">
 										<div className="flex-1">
 											<FormField
 												control={form.control}
