@@ -179,12 +179,28 @@ export function extractCustomerIdFromUrl(url: string) {
   return customerId;
 }
 
+import { createHmac, randomBytes } from 'crypto';
+
+const ENCRYPTION_KEY = process.env.SHARABLE_ID_SECRET || process.env.JWT_SECRET || '';
+const HMAC_SECRET = ENCRYPTION_KEY;
+
 export function encryptId(id: string) {
-  return btoa(id);
+  const hmac = createHmac('sha256', HMAC_SECRET).update(id).digest('hex');
+  return Buffer.from(`${id}:${hmac}`).toString('base64url');
 }
 
-export function decryptId(id: string) {
-  return atob(id);
+export function decryptId(encoded: string) {
+  try {
+    const decoded = Buffer.from(encoded, 'base64url').toString('utf-8');
+    const [id, providedHmac] = decoded.split(':');
+    const expectedHmac = createHmac('sha256', HMAC_SECRET).update(id).digest('hex');
+    if (providedHmac !== expectedHmac) {
+      throw new Error('Invalid sharable ID');
+    }
+    return id;
+  } catch {
+    throw new Error('Invalid sharable ID');
+  }
 }
 
 export const getTransactionStatus = (date: Date) => {
@@ -210,3 +226,23 @@ export const authFormSchema = ( type:string) => z.object({
   email: z.string().email(),
   password: z.string().min(8),
 })
+
+export const signUpStep1Schema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  dateOfBirth: z.string().min(8, "Date of birth is required"),
+})
+
+export const signUpStep2Schema = z.object({
+  address: z.string().min(1, "Address is required").max(50),
+  city: z.string().min(4, "City must be at least 4 characters").max(50),
+  postalCode: z.string().min(5, "Postal code must be at least 5 characters").max(8),
+})
+
+export const signUpStep3Schema = z.object({
+  ssn: z.string().min(8, "Identification number must be at least 8 characters"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+})
+
+export const signUpStepSchemas = [signUpStep1Schema, signUpStep2Schema, signUpStep3Schema]

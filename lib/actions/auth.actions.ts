@@ -6,11 +6,14 @@ import { getDb } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { hashPassword, verifyPassword, createToken, verifyToken } from '@/lib/auth';
 import { parseStringify } from '@/lib/utils';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const signUp = async (userData: SignUpParams) => {
   try {
     const existingUser = await getDb().select().from(users).where(eq(users.email, userData.email)).limit(1);
-    if (existingUser.length > 0) throw new Error('User already exists');
+    if (existingUser.length > 0) {
+      return { error: 'An account with this email already exists.' };
+    }
 
     const hashedPassword = await hashPassword(userData.password);
 
@@ -40,17 +43,26 @@ export const signUp = async (userData: SignUpParams) => {
     return parseStringify(getUserResponse(newUser));
   } catch (error) {
     console.error('Error signing up:', error);
-    return null;
+    return { error: 'Failed to create account. Please try again.' };
   }
 };
 
 export const signIn = async ({ email, password }: signInProps) => {
   try {
+    const rateLimitKey = `signin:${email}`;
+    if (!checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000)) {
+      return { error: 'Too many sign-in attempts. Please try again in 15 minutes.' };
+    }
+
     const [user] = await getDb().select().from(users).where(eq(users.email, email)).limit(1);
-    if (!user) throw new Error('User not found');
+    if (!user) {
+      return { error: 'No account found with this email address.' };
+    }
 
     const isValid = await verifyPassword(password, user.password);
-    if (!isValid) throw new Error('Invalid password');
+    if (!isValid) {
+      return { error: 'Incorrect password. Please try again.' };
+    }
 
     const token = await createToken({ userId: user.id, email: user.email });
 
@@ -66,7 +78,7 @@ export const signIn = async ({ email, password }: signInProps) => {
     return parseStringify(getUserResponse(user));
   } catch (error) {
     console.error('Error signing in:', error);
-    return null;
+    return { error: 'Failed to sign in. Please try again.' };
   }
 };
 

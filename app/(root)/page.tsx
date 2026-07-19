@@ -3,13 +3,12 @@ import TotalBalanceBox from '@/components/totalBalanceBox';
 import RightSidebar from '@/components/rightSidebar';
 import RecentTransactions from '@/components/RecentTransactions';
 import { getLoggedInUser } from '@/lib/actions/auth.actions';
-import { getAccounts } from '@/lib/actions/bank.actions';
+import { getAccounts, getTransactionsByUserId } from '@/lib/actions/bank.actions';
 
 const Home = async () => {
   const loggedIn = await getLoggedInUser();
 
   if (!loggedIn) {
-    const guestUser: User = { firstName: 'Guest', lastName: '', email: '', $id: '0', id: '0', address: '', city: '', postalCode: '', dateOfBirth: '', ssn: '' };
     return (
       <section className="home">
         <div className="home-content">
@@ -23,7 +22,7 @@ const Home = async () => {
 
   const accountsData = await getAccounts({ userId: loggedIn.$id });
   const accounts = accountsData?.data || [];
-  const transactions: Transaction[] = [];
+  const transactions: Transaction[] = await getTransactionsByUserId({ userId: loggedIn.$id });
 
   return (
     <section className="home">

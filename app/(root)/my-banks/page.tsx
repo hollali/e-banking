@@ -2,6 +2,7 @@ import BankCard from '@/components/bankCard';
 import HeaderBox from '@/components/headerBox';
 import { getAccounts } from '@/lib/actions/bank.actions';
 import { getLoggedInUser } from '@/lib/actions/auth.actions';
+import BankActions from '@/components/BankActions';
 
 const MyBanks = async () => {
   const loggedIn = await getLoggedInUser();
@@ -29,7 +30,10 @@ const MyBanks = async () => {
 
         <div className="flex flex-wrap gap-6">
           {accounts.map((account: Account) => (
-            <BankCard key={account.appwriteItemId} account={account} userName={loggedIn.firstName} showBalance={true} />
+            <div key={account.appwriteItemId} className="flex flex-col gap-2">
+              <BankCard account={account} userName={loggedIn.firstName} showBalance={true} />
+              <BankActions bankId={account.appwriteItemId} userId={loggedIn.$id} />
+            </div>
           ))}
         </div>
 

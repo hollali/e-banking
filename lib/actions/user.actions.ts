@@ -114,3 +114,17 @@ export const getBankByAccountId = async ({ accountId }: getBankByAccountIdProps)
     return null;
   }
 };
+
+export const unlinkBankAccount = async ({ bankId, userId }: { bankId: string; userId: string }) => {
+  try {
+    const [bank] = await getDb().select().from(bankAccounts).where(eq(bankAccounts.id, bankId)).limit(1);
+    if (!bank) return { error: 'Bank account not found.' };
+    if (bank.userId !== userId) return { error: 'Unauthorized.' };
+
+    await getDb().delete(bankAccounts).where(eq(bankAccounts.id, bankId));
+    return { success: true };
+  } catch (error) {
+    console.error('Error unlinking bank account:', error);
+    return { error: 'Failed to unlink bank account.' };
+  }
+};

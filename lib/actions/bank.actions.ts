@@ -91,6 +91,47 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
   }
 };
 
-export const getTransactions = async ({ accessToken }: getTransactionsProps) => {
-  return parseStringify([]);
+export const getTransactionsByUserId = async ({ userId }: { userId: string }) => {
+  try {
+    const userBanks = await getDb().select()
+      .from(bankAccounts)
+      .where(eq(bankAccounts.userId, userId));
+
+    if (!userBanks.length) return parseStringify([]);
+
+    const bankIds = userBanks.map((b) => b.id);
+
+    const transactionsData = await getDb().select()
+      .from(transactionsSchema)
+      .where(
+        or(
+          ...bankIds.map((id) => eq(transactionsSchema.senderBankId, id)),
+          ...bankIds.map((id) => eq(transactionsSchema.receiverBankId, id))
+        )
+      )
+      .orderBy(desc(transactionsSchema.createdAt));
+
+    const transactions = transactionsData.map((txn) => ({
+      id: txn.id,
+      $id: txn.id,
+      name: txn.name,
+      amount: parseFloat(txn.amount),
+      date: txn.createdAt.toISOString(),
+      paymentChannel: 'transfer',
+      category: 'Transfer',
+      type: bankIds.includes(txn.senderBankId) ? 'debit' : 'credit',
+      $createdAt: txn.createdAt.toISOString(),
+      channel: 'transfer',
+      senderBankId: txn.senderBankId,
+      receiverBankId: txn.receiverBankId,
+      pending: txn.status === 'pending',
+      accountId: bankIds.includes(txn.senderBankId) ? txn.senderBankId : txn.receiverBankId,
+      image: '',
+    }));
+
+    return parseStringify(transactions);
+  } catch (error) {
+    console.error('Error getting transactions by user id:', error);
+    return [];
+  }
 };

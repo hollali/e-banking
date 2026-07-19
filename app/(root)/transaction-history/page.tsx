@@ -1,9 +1,9 @@
 import HeaderBox from '@/components/headerBox';
 import TransactionHistoryTable from '@/components/TransactionHistoryTable';
 import { getLoggedInUser } from '@/lib/actions/auth.actions';
-import { getAccount } from '@/lib/actions/bank.actions';
+import { getTransactionsByUserId } from '@/lib/actions/bank.actions';
 
-const TransactionHistory = async ({ searchParams }: { searchParams: { id?: string; page?: string } }) => {
+const TransactionHistory = async ({ searchParams }: { searchParams: { page?: string; query?: string } }) => {
   const loggedIn = await getLoggedInUser();
 
   if (!loggedIn) {
@@ -14,14 +14,18 @@ const TransactionHistory = async ({ searchParams }: { searchParams: { id?: strin
     );
   }
 
-  const appwriteItemId = searchParams.id || '';
   const page = Number(searchParams.page) || 1;
+  const query = searchParams.query || '';
 
-  let transactions: Transaction[] = [];
+  let transactions: Transaction[] = await getTransactionsByUserId({ userId: loggedIn.$id });
 
-  if (appwriteItemId) {
-    const accountData = await getAccount({ appwriteItemId });
-    transactions = accountData?.transactions || [];
+  if (query) {
+    const lowerQuery = query.toLowerCase();
+    transactions = transactions.filter(
+      (t) =>
+        t.name.toLowerCase().includes(lowerQuery) ||
+        t.category.toLowerCase().includes(lowerQuery)
+    );
   }
 
   return (
